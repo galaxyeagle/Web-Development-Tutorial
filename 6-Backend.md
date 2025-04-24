@@ -480,7 +480,30 @@ Here, `next()` passes control to the next middleware function. If you have the `
 
 Also, the `app.use(path, middlewareFunction)` method is used to apply/load/mount the middleware. You can `mount` a middleware to a specific path/route. If no `path` is mentioned in its argument, it's applied globally.
 
-As you can understand now, the middleware performs functions like logging, authentication, error handling, etc. before the route handler handles those requests.
+You can also use a middleware to pre-handle the request on a specific endpoint. For example, 
+
+```js
+const upload = multer({ dest: 'uploads/' });
+
+app.post('/upload', upload.single('file'), async (req, res) => {
+  const filePath = req.file.path;
+  const mimeType = req.file.mimetype;
+
+  let parsedText = 'Unsupported file type';
+
+  if (mimeType === 'application/pdf') {
+  const dataBuffer = fs.readFileSync(filePath);
+  const parsed = await pdfParse(dataBuffer);
+  parsedText = parsed.text;
+  }
+
+    fs.unlinkSync(filePath); 
+    res.json({ content: parsedText });
+);
+```
+Here an instance (upload) of the `multer` middleware is used to pre-handle the request of a file upload received from the frontend. This middleware creates `req.file` out of `req` using metadata which is used by this REST API for further parsing.
+
+In short, you can understand now, the middleware performs pre-handling functions like logging, authentication, error handling, etc. before the route handler handles those requests.
 
 As you would see later, Express has many `built-in middlewares` like `express.Router`, `express.static`, `express.json`, etc. which you can directly mount in your server app using the .use() method and make your server app extremely `modular`.
 
@@ -717,7 +740,7 @@ Popular Action Apps include:
 - Trello
 - Microsoft Teams
 
-Unlike normal Fetch APIs, Webhooks usually have one way communication (webhook url doesn't send any response to trigger app). This is why webhooks are sometimes called "Reverse APIs" or "HTTP Push APIs." Instead of pulling data from the server when you need it (like with Fetch), the server pushes data to you when something interesting happens. It's sometimes called a "web callback" because your action app's endpoint is being called back by the trigger app when an event occurs.
+Unlike normal Fetch APIs, Webhooks usually have one way communication (webhook url doesn't send any response to trigger app, ie. no `GET` request allowed). This is why webhooks are sometimes called "Reverse APIs" or "HTTP Push APIs." Instead of pulling data from the server when you need it (like with Fetch), the server pushes data to you when something interesting happens. It's sometimes called a "web callback" because your action app's endpoint is being called back by the trigger app when an event occurs.
 
 Webhooks are the backbone of web automation. APIs send you the data when you request it. For Webhooks, you do not need to make a request. You receive the data whenever it is available.
 
