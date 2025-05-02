@@ -303,6 +303,50 @@ To apply your knowledge, the complete source code for 2 exciting projects using 
 While in the Theme Toggler example you create a toggleTheme method, in the Cart example you usually need to define multiple methods like addToCart, removeFromCart, clearCart, etc. within the `CartProvider` component.
 
 
+## 7. Routing
+
+In the latest React Router v6, `<Switch>` wrapper is replaced by `<Routes>`. The complete nesting structure to route ceratin paths to certain Components is as follows: 
+
+```js
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route exact path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+```
+
+For more detail, you can refer [here](7-Running%20and%20Deployment.md/#v-routing).
+
+## 8. Navigation
+
+Once routing is hardcoded, navigation bar can be made by nesting `<Link>s` within `<nav>` as follows:
+
+```js
+import { Link } from 'react-router-dom';
+
+const Nav = () => (
+  <nav>
+    <Link to="/home">Home</Link>
+    <Link to="/about">About</Link>
+  </nav>
+);
+
+```
+
+Note that `<nav>` wrapper is optional but much needed for navbar styling.
+
+## 9. Dynamic Routing
+
+Dynamic routes contain the :id param in the route definition.
+
 # D. UI Component Libraries
 
 If you carefully analyse, a React frontend project is nothing but components. All the UI you see on a webpage: the header/navbar, hero section, body, footer, buttons, sidebar, login page, table, info card, etc. are all but React components whose code you can actually re-use at multiple places. What if some expert could code all the most popular reusable `primitive` `components` and put it in a library for you? You guessed it right, it would be great. Such libraries are called `UI Component Libraries`. 
