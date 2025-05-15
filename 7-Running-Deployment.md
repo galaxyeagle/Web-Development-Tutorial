@@ -1,18 +1,18 @@
 
 # Running your app locally
 
-Running your application means to manifest your local App code into a working Application on the browser window. 
+Running your application means to manifest your local App code into a working Application on the browser window.
 
 # I. RUNNING YOUR FRONTEND REACT APP
 
 There are 5 steps needed to run your React application :
 
-i. `Building`  
-&nbsp;&nbsp; a] Bundling all .js files  
-&nbsp;&nbsp; b] Injected bundled js into the index.html file  
-ii. `Creating a server`  
-iii. `Serving` - i.e. the created server loads the built app onto a /localhost:PORT in the browser  
-iv. `Rendering`  
+i. `Building`
+&nbsp;&nbsp; a] Bundling all .js files
+&nbsp;&nbsp; b] Injected bundled js into the index.html file
+ii. `Creating a server`
+iii. `Serving` - i.e. the created server loads the built app onto a /localhost:PORT in the browser
+iv. `Rendering`
 v. `Routing` - i.e. changing the webpage based on requested path
 
 CRA and Vite are two popular tools for building+serving React Apps.
@@ -21,8 +21,8 @@ CRA and Vite are two popular tools for building+serving React Apps.
 
 Your React App firstly contains JSX/Typescript which unlike pure JS, Node can't run directly. Secondly this JSX is injected into the root of an `index.html` file which Node cannot run. Hence Vite (the build tool we're using) needs to convert all sourcecode into **pure static files** (vanilla html (with/out js hydration) +css+ images,etc) creates an optimized build of the app which the browsers can play.
 
-The bundling+injection process happens when you run `npm run dev` (for Vite), or `npm run start` (for CRA). The `/public/index.html` file is injected with bundled javascript and CSS within its `<body>`.  
-CRA uses the build tool Webpack, whereas Vite uses esbuild. esbuild owes its speed to the fact that it is written in Go — a fast, multithreaded language compiled to machine code, unlike Webpack, written using JavaScript, which is interpreted and single-threaded, which in turn makes it slower for larger projects. Moreover with Vite, changes in your code trigger rapid hot-module reloading (HMR), leading to near-instantaneous updates in the browser. This is a significant speed advantage during development.  
+The bundling+injection process happens when you run `npm run dev` (for Vite), or `npm run start` (for CRA). The `/public/index.html` file is injected with bundled javascript and CSS within its `<body>`.
+CRA uses the build tool Webpack, whereas Vite uses esbuild. esbuild owes its speed to the fact that it is written in Go — a fast, multithreaded language compiled to machine code, unlike Webpack, written using JavaScript, which is interpreted and single-threaded, which in turn makes it slower for larger projects. Moreover with Vite, changes in your code trigger rapid hot-module reloading (HMR), leading to near-instantaneous updates in the browser. This is a significant speed advantage during development.
 
 When you run `npm run dev`, Vite doesn't create a separate build folder like you would with a traditional build process. Instead, Vite uses a technique called "in-memory bundling" or "on-the-fly bundling".
 
@@ -50,11 +50,11 @@ If you want to create an application with multiple page routes, eg.
 ├── contact/
 └── services/
 ```
-you should do routing. This is also called `client-side routing`. 
+you should do routing. This is also called `client-side routing`.
 
 Vite doesn't perform routing by default. So you can import an external React library `react-router-dom` (separate from the `react` library, to handle routing. Refer to [this](https://hygraph.com/blog/routing-in-react) tutorial on Routing for clarity.
 
-So the server `serves a single index.html file`, which acts as a "shell/template" for the application, while the `React Router` (ie.`react-router-dom` library) ensures that routing happens dynamically and the corresponding component can be rendered without making a new request to the development server. 
+So the server `serves a single index.html file`, which acts as a "shell/template" for the application, while the `React Router` (ie.`react-router-dom` library) ensures that routing happens dynamically and the corresponding component can be rendered without making a new request to the development server.
 
 Moreover, most modern HTML5 browsers are powered with the `History API` which has useful methods like `pushState()` to interact with your hosted React SPA. So when a user clicks a link or performs an action that changes the view, React Router can use `pushState()` to update the URL in the address bar. This gives the appearance of navigating to a new page while keeping the application running in the background.
 
@@ -134,7 +134,7 @@ Like Frontend, there are 5 steps needed to run your backend application :
 
 ## ii. Creating a server
 
-Unlike a Frontend React App where the development server is auto-created by Vite as explained [above](#ii-serving), in the backend you need to manually create your own server as an `index.js` file as explained [here in Chap 6-Backend](./6-Backend.md#1-setting-up-a-web-server-using-expressjs-framework).   
+Unlike a Frontend React App where the development server is auto-created by Vite as explained [above](#ii-serving), in the backend you need to manually create your own server as an `index.js` file as explained [here in Chap 6-Backend](./6-Backend.md#1-setting-up-a-web-server-using-expressjs-framework).
 (N.B. if you have a serverless backend like Firebase, then it's not needed.)
 
 ## iii. Serving the app
@@ -161,7 +161,7 @@ Based on when and where rendering is done, we have different strategies:
   * When : At runtime, when the page is requested.
   * Where : On the server (e.g., PHP/Apache)
   * Details : Each request triggers the server to query a database, run PHP, and generate full HTML. Common in older CMSes like WordPress/Drupal/Joomla or custom PHP apps.
-  
+
 ## 2. CSR (Client-Side Rendering)
 
   * When: At runtime, when the page loads or user interacts.
@@ -169,7 +169,7 @@ Based on when and where rendering is done, we have different strategies:
   * Details : Slow initial load and SEO issues
 
   You must understand the CSR can only happen because there is clear separation of client and server. This is how it works locally.
-  
+
   ### a. Frontend/backend separation
 
 1. Keep frontend files in `/frontend` (Vite project)
@@ -182,7 +182,7 @@ While deploying, you can host/deploy frontend and backend in separate cloud serv
 
 ### b. Proxy configuration
 
-Some people do this step. Although your fullstack app would work even without this. 
+Some people do this step. Although your fullstack app would work even without this.
 
 Add this to vite.config.js:
 
@@ -212,7 +212,7 @@ This routes all `/api` requests to Express while serving frontend assets through
 
   ### `Sub-Strategy 1:`
 
-  Here we want to use a single server to serve both our frontend and backend apps. 
+  Here we want to use a single server to serve both our frontend and backend apps.
 
 Firstly, remember that Vite is only a developmemt server but Express is a production grade web server. So we'll use our Express server to serve both frontend and backend.
 
@@ -251,7 +251,7 @@ Serving the frontend static build from Express server.
 In your Express server file `index.js`:
 
 ```js
-//This uses the express.static() middleware to serve static files from /dist. The index.html in /dist would be hosted in the root '/' 
+//This uses the express.static() middleware to serve static files from /dist. The index.html in /dist would be hosted in the root '/'
 app.use(express.static(path.join(__dirname, '../frontend/dist')))
 
 //This handles any GET request to any route (* is a wildcard) by sending the index.html file from the /client/dist directory
@@ -318,7 +318,7 @@ By using one of these approaches, you can ensure that API requests are handled b
 
 ------------
 
-Note that Express API can even handle some client-site routes where it can provide dynamic response based on user input (eg. name provide in the URL), eg.: 
+Note that Express API can even handle some client-site routes where it can provide dynamic response based on user input (eg. name provide in the URL), eg.:
 ```js
 app.get('/greet/:name', (req, res) => {
   const name = req.params.name;
@@ -327,9 +327,9 @@ app.get('/greet/:name', (req, res) => {
 ```
 This is called `Dynamic serving` whereas it's called `Static serving` when we [previously](#b-serving-frontend-from-the-backend) served our frontend static build. Because Express can serve these non-API dynamic routes as well, you can infact add an index.html file within your `/backend` folder and create a standalone webapp purely with backend !
 
-### `Sub-Strategy 2: Server Side Rendering (SSR)` 
+### `Sub-Strategy 2: Server Side Rendering (SSR)`
 
-We had read about Client-Side Rendering (CSR) [earlier](#iv-rendering).
+We had read about Client-Side Rendering (CSR) [earlier](#2-csr-client-side-rendering).
 
 * We've been doing CSR till now :
 
@@ -341,7 +341,7 @@ HTML loads much faster than the supporting JS. But in CSR, it has to wait for th
 
 * What's the solution?
 
-If we could pre-render the minimal static html in the server itself and load and display it in the browser instantly, while letting the JS to thereafter slowly execute and enhance (`hydrate`) this html so that the web-page eventually behaves like a fully interactive SPA, it'll be great. This process where html rendering happens on the server before the content reaches the client is called `SSR`. 
+If we could pre-render the minimal static html in the server itself and load and display it in the browser instantly, while letting the JS to thereafter slowly execute and enhance (`hydrate`) this html so that the web-page eventually behaves like a fully interactive SPA, it'll be great. This process where html rendering happens on the server before the content reaches the client is called `SSR`.
 
 For SSR, our server `/backend/index.js` file would have this:
 
@@ -394,22 +394,22 @@ However our Nodejs won't be able to run this server js file as it's not pure JS 
 TL;DR: in SSR, html `rendering` doesn't wait for JS `hydration`. By instantly loading the minimal html, search engines can more easily find this page improving SEO compared with CSR.
 
 
-## 4. Static Site Generated (SSG) - 
+## 4. Static Site Generated (SSG) -
 
 **------- The core idea of SSG is to pre-render the project (ie. convert to pure static files) at `build-time` instead of `run time` we were doing in CSR and SSR. This would ensure very fast page loads.-------**
 
-We know that `build + API injection = rendering`. So if there are no APIs in the sourcecode, rendering will happen at build time ! 
+We know that `build + API injection = rendering`. So if there are no APIs in the sourcecode, rendering will happen at build time !
 
-Again if you insist on using APIs as they give God-level interactivity, better use 3rd party APIs. Because retrieving the REST APIs from your own backend web server would be slow and code-heavy. 
+Again if you insist on using APIs as they give God-level interactivity, better use 3rd party APIs. Because retrieving the REST APIs from your own backend web server would be slow and code-heavy.
 
-Further if you have your own web server, you'll have to host it separate from the frontend, because it's very difficult to convert its REST APIs which are `dynamic` content, into `pure static files` (vanilla html+ css+ md+ images+ setup files) for rendering alongwith the frontend. 
+Further if you have your own web server, you'll have to host it separate from the frontend, because it's very difficult to convert its REST APIs which are `dynamic` content, into `pure static files` (vanilla html+ css+ md+ images+ setup files) for rendering alongwith the frontend.
 
-All of these constraints basically means that solely a site with only own frontend code and no own backend server, can be pre-rendered at build time. Infact `serverlessness` is a key feature of SSG sites. 
+All of these constraints basically means that solely a site with only own frontend code and no own backend server, can be pre-rendered at build time. Infact `serverlessness` is a key feature of SSG sites.
 
-The frontend code can be anything - pure static files (vanilla html+ css+ md+ images+ setup files), or static+ vanilla JS, or static+ JS frameworks(eg Reactjs, D3js, etc.).  
+The frontend code can be anything - pure static files (vanilla html+ css+ md+ images+ setup files), or static+ vanilla JS, or static+ JS frameworks(eg Reactjs, D3js, etc.).
 Whatever it is, depending on what it is, you need to use some `build tool` aka `static site generator` to render it into **PUREST VANILLA STATIC FILES**. Examples of such build tools are :
 
-* like `Jekyll`: (written in Ruby syntax) for pure static files (esp. md) + liquid templates  
+* like `Jekyll`: (written in Ruby syntax) for pure static files (esp. md) + liquid templates
 * like `Hugo`: (written in Go syntax) for static files
 * like `Eleventy`: (written in JS syntax) for static files
 * like `Gatsby` : (written in Reactjs syntax) for static files
@@ -424,17 +424,17 @@ In `production mode`, use `build` command eg. jekyll build or vite build, then a
 
 - **A TRICK TO ABSTRACT THE `BUILD` COMMAND :**
 
-  Often, you might not be sure of the build tool you wish to use. Say you use jekyll, but might shift to hugo tomorrow. So in your `package.json`, add a script like `"dev": "jekyll serve"` and `"build": "jekyll build"` for Jekyll. For other tools, you can replace jekyll build with the respective build command (e.g., hugo, gatsby build, etc.). 
+  Often, you might not be sure of the build tool you wish to use. Say you use jekyll, but might shift to hugo tomorrow. So in your `package.json`, add a script like `"dev": "jekyll serve"` and `"build": "jekyll build"` for Jekyll. For other tools, you can replace jekyll build with the respective build command (e.g., hugo, gatsby build, etc.).
 
   Then instead of `jekyll serve`, you can run `npm run dev`, and instead of `jekyll build` you can run `npm run build`. If you want to shift to `hugo` tomorrow, just change the package.json script accordingly and the same npm commands keep working as before.
 
-  NB. Instead of `npm run build` and `package.json`, you can use `make build` and `Makefile` esp. for non-JS heavy sites, but that often has dependency issues. 
+  NB. Instead of `npm run build` and `package.json`, you can use `make build` and `Makefile` esp. for non-JS heavy sites, but that often has dependency issues.
 
   NB. GitHub Pages has native support for Jekyll, meaning it automatically builds and deploys Jekyll sites even without a package.json. But that's not true for other PaaSs like Heroku or Firebase which can auto-build but you need to specify the build tool in package.json. It's anyway a good practice to specify because you'll need to `serve` if not `build` in the testing/development phase anyway.
 
 
-There are two sub-types of SSG sites:   
-SSG site without any backend, and,   
+There are two sub-types of SSG sites:
+SSG site without any backend, and,
 SSG site with a serverless backend aka JAMStack.
 
 ### Type A. SSG site without any backend
@@ -443,9 +443,9 @@ SSG site with a serverless backend aka JAMStack.
   * **Where** : PaaSs (Platforms as a Service) which I like to call `CDN++` (i.e. CDN + build(CI/CD) pipeline + serverless functions) - egs. --see list below--
   * **Details** : Delegate all server functionalities to 3rd party APIs and use Fetch APIs from 3rd party apps (eg live weather) can be used. Core backend functionalities like database access or payments, etc. are not supported.
 
-  [*nb. KEY TERMS ARE :    
-  CDN => Global network of edge servers for fast delivery of static assets (HTML, CSS, JS, images).  
-  CI/CD Pipeline => Automated build and deployment triggered by code changes (e.g., Git commits).  
+  [*nb. KEY TERMS ARE :
+  CDN => Global network of edge servers for fast delivery of static assets (HTML, CSS, JS, images).
+  CI/CD Pipeline => Automated build and deployment triggered by code changes (e.g., Git commits).
   Serverless Functions => Backend logic for dynamic features without managing servers.*]
 
   ### Type B. SSG site with a serverless backend `aka` JAMStack
@@ -454,21 +454,21 @@ SSG site with a serverless backend aka JAMStack.
   * **Where** : `CDN++` (i.e. CDN + build(CI/CD) pipeline + serverless functions)
   * **Details** : Prefers cloud database/payments/etc. accessed via proprietary `serverless backend functions`/ `FaaS` instead of a local one. Also delegate all other server functionalities to 3rd party APIs and access them via fetch/axios.  Hence omit the server completely.
 
-Emprically,  
+Emprically,
 **Type B = Type A + Serverless backend functions**
 
 You can use a combination of any PaaS/CDN++ and any build/CI tool, although some CDN++s have inbuilt build tools like Github pages has Jekyll. But you can override that with custom CI pipelines using tools like `Jenkins` *(which will override Github Actions)* or better by locally building the app using your favourite build-tool before pushing your build to the CDN++.
 
 Let's now compare some popular CDN++s :
 
-Github pages   
-Codeberg pages    
-Gitlab pages   
-Heroku pages    
-Cloudfare  
-Firebase  
-Vercel  
-Netlify  
+Github pages
+Codeberg pages
+Gitlab pages
+Heroku pages
+Cloudfare
+Firebase
+Vercel
+Netlify
 
 Refer [here](https://jekyllrb.com/docs/deployment/third-party/) or [here](https://akashrajpurohit.com/blog/top-free-services-to-deploy-full-stack-applications/) for an expanded list of static build tools.
 
@@ -528,7 +528,7 @@ Refer [here](https://jekyllrb.com/docs/deployment/third-party/) or [here](https:
 
 
 
-# IV. DEPLOYMENT 
+# IV. DEPLOYMENT
 
 After local testing, the key to deploying your app for public use is that you'll have to run both frontend and backend applications simultaneously, where the entire `application flow` from user input to backend processing back to the user input happens seamlessly.
 
@@ -538,7 +538,7 @@ You can use tools like `ngrok` to expose your local server to the internet durin
 
 ### Firebase
 
-For Firebase hosting, cd to your `/frontend` folder in the powershell and run these commands : 
+For Firebase hosting, cd to your `/frontend` folder in the powershell and run these commands :
 
 ```js
 // Install the Firebase CLI globally using npm:
@@ -576,7 +576,7 @@ If you don't want to deploy to the final app URL but to a preview URL for testin
 
 1. Push your code into a public Git repository (eg. Github)
 ```bash
-# Initialize git 
+# Initialize git
 git init
 
 # Add all files
@@ -605,11 +605,11 @@ Render will pull your code from the repository, build it, and deploy it.
 Render supports auto-deploy from your Git repository. So any changes pushed to the connected Github branch will trigger a new deployment.
 
 
-# V. HOSTING 
+# V. HOSTING
 
 Note that till now for simplicity I made you believe that app dev is a 4 step process:
 
-Code - Build - Render - Deploy 
+Code - Build - Render - Deploy
 
 By using SSG sites, we essentially combined 'Build' and 'Render' stages making it a 3 step process:
 
@@ -625,7 +625,7 @@ Thus some technical people prefer to use a completely free CDN++ like `Coolify` 
 
 (Fun fact: You can self host third party apps also like your Gmail client or any website eg. amazon.com if you have enough server resources !)
 
-**Below is a small tutorial to use Coolify with Digital Ocean.** 
+**Below is a small tutorial to use Coolify with Digital Ocean.**
 
 1. **`CONFIGURING DIGITALOCEAN`:**
 
@@ -638,7 +638,7 @@ Thus some technical people prefer to use a completely free CDN++ like `Coolify` 
 
 2. **`INSTALL COOLIFY ON YOUR SERVER`**
 
-    Coolify runs in a Docker container on your server. Think of Docker as a "virtual machine light" that isolates `built` apps into `virtual containers` on the server, effectively partitioning the server. Note that this virtualisation allows isolated containers and is ≠ shared servers that was earlier used eg in Wordpress. 
+    Coolify runs in a Docker container on your server. Think of Docker as a "virtual machine light" that isolates `built` apps into `virtual containers` on the server, effectively partitioning the server. Note that this virtualisation allows isolated containers and is ≠ shared servers that was earlier used eg in Wordpress.
 
     Commands to Run (via SSH):
 

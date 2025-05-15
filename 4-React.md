@@ -1,18 +1,28 @@
-# A. Reference tutorials for React 
+<style>
+  h1 { font-size: 3em; }
+  h2 { font-size: 2.5em; }
+  h3 { font-size: 2em; }
+  h4 { font-size: 1.5em; }
+  h5 { font-size: 1.3em; }
+  h6 { font-size: 1.2em; }
+</style>
 
-To revise the JS needed to learn React, you can refer to [this video](https://www.youtube.com/watch?v=m55PTVUrlnA). React is a JS Frontend Library specifically designed for creating UIs. To start with React, you can refer to [Mosh's video](https://www.youtube.com/watch?v=SqcY0GlETPk). I think the best comprehensive tutorial on React is [Asabeneh's 30 days React course](https://github.com/Asabeneh/30-Days-Of-React/tree/master). 
 
-N.B.: If you're working on VSCode, I'd recommend installing the `Prettier` extension for formatting & indentation as the long codes can becoming overwhelming to the eye ! After installing, go to File > Preferences > Settings, search for "formatter" and select "Prettier" as the default formatter. 
+# A. Reference tutorials for React
+
+To revise the JS needed to learn React, you can refer to [this video](https://www.youtube.com/watch?v=m55PTVUrlnA). React is a JS Frontend Library specifically designed for creating UIs. To start with React, you can refer to [Mosh's video](https://www.youtube.com/watch?v=SqcY0GlETPk). I think the best comprehensive tutorial on React is [Asabeneh's 30 days React course](https://github.com/Asabeneh/30-Days-Of-React/tree/master).
+
+N.B.: If you're working on VSCode, I'd recommend installing the `Prettier` extension for formatting & indentation as the long codes can becoming overwhelming to the eye ! After installing, go to File > Preferences > Settings, search for "formatter" and select "Prettier" as the default formatter.
 
 # B. Some updates on Asabeneh's tutorials
 
 * Asabeneh's tutorial is from 2020, with many PRs pending & in his Chapter 3, he explains using the build tool `CRA (Create-React-App)` to instantiate your app (ie. create a boilerplate). However CRA was deprecated in 2023 & I faced dependency issues as well while installing it. So better use the `Vite` tool, which is a NodeJS package. N.B. unlike CRA, Vite is not a globally installed tool, so you need to run the installation command within each new project directory to set it up for that project. So after installing the latest version of Node (npm installs alongwith it) from the NodeJS website, go to your project folder and run the following commands in sequence in your VSCode Powershell:
-    
-    `npm create vite@latest 30daysofreact --template-react`  // 'npm create' is a command which scaffolds a project folder with a desired package (vite here) features. This also adds the necessary devDependencies in the package.json file which the next two commands help install.   
-    `npm install`  // installs dependencies as mentioned in package.json   
+
+    `npm create vite@latest 30daysofreact --template-react`  // 'npm create' is a command which scaffolds a project folder with a desired package (vite here) features. This also adds the necessary devDependencies in the package.json file which the next two commands help install.
+    `npm install`  // installs dependencies as mentioned in package.json
     `npm run dev`  // starts the development server as defined in the package.json scripts. It typically runs the Vite development server, allowing you to view your app in the browser
-    
-    And boom ! Your default React App named `30daysofreact` will be served at `localhost:5173`. Now of course a boilerplate app was scaffolded for you by Vite. You can strip off the inessentials and start making your own app by following [this video](https://www.youtube.com/watch?v=RbZyQWOEmD0). Ensure that the `type="module"` attribute in the script tag in your index.html file is present for succesful rendering.  
+
+    And boom ! Your default React App named `30daysofreact` will be served at `localhost:5173`. Now of course a boilerplate app was scaffolded for you by Vite. You can strip off the inessentials and start making your own app by following [this video](https://www.youtube.com/watch?v=RbZyQWOEmD0). Ensure that the `type="module"` attribute in the script tag in your index.html file is present for succesful rendering.
     You can also try Vite online on [Stackblitz](https://vite.new/) or [playcode.io](https://playcode.io/) if you don't want to install anything on your local machine :) As you may notice, the no. of project setup files is also lesser there.
 
     Some smart people may want to run their Vite development server without installing all the Vite dependencies like this:
@@ -27,9 +37,9 @@ N.B.: If you're working on VSCode, I'd recommend installing the `Prettier` exten
 
     <br />
 
-* The traditional way of rendering an `App` component in a file `index.jsx` through a `root` div element of a file `index.html` is mentioned in Asabeneh's tutorial as follows:  
-`ReactDom.render(App, root)`  in the index.jsx file.  
-However [after React 18](https://www.syncfusion.com/blogs/post/everything-you-should-know-about-react-18), you first need to create a `root` object from ReactDom using `createRoot` method, and then use the `render` method on that, as follows:  
+* The traditional way of rendering an `App` component in a file `index.jsx` through a `root` div element of a file `index.html` is mentioned in Asabeneh's tutorial as follows:
+`ReactDom.render(App, root)`  in the index.jsx file.
+However [after React 18](https://www.syncfusion.com/blogs/post/everything-you-should-know-about-react-18), you first need to create a `root` object from ReactDom using `createRoot` method, and then use the `render` method on that, as follows:
     ```js
     import * as ReactDOM from 'react-dom';
     import App from 'App';
@@ -52,15 +62,15 @@ Thus the `<App />` component and all its descendants will be checked according t
 
 # C. Key Concepts
 
-## 1. Components 
+## 1. Components
 
-Components in React are const variables (Chap 2 Asabeneh) or JavaScript functions (Chap 4 Asabeneh), that `return` a JSX.  
+Components in React are const variables (Chap 2 Asabeneh) or JavaScript functions (Chap 4 Asabeneh), that `return` a JSX.
 
-  Eg.  
+  Eg.
 
-  `const jsx = <tag> Content </tag>`, 
+  `const jsx = <tag> Content </tag>`,
 
-  or  
+  or
 
   ```js
   const ComponentName = () => {
@@ -70,7 +80,7 @@ Components in React are const variables (Chap 2 Asabeneh) or JavaScript function
 
   Functional components are preferred for a variety of reasons, eg. enabling props. (Further, the introduction of `hooks` in React in 2018 allowed functional components to be omnipotent). As the name suggests, these are functions that take some arguments as input and return a JSX output. The input to a traditional JS function is arguments. The input to a React component similarly is Props !
 
-  As you can see, the arrow syntax of functional components also has a declaration resembling const variables ! Even objects declaration have a similar syntax. 
+  As you can see, the arrow syntax of functional components also has a declaration resembling const variables ! Even objects declaration have a similar syntax.
 
 
 
@@ -90,7 +100,7 @@ Components in React are const variables (Chap 2 Asabeneh) or JavaScript function
   )
   ```
 
-  If you refer to Chap 5 Asabeneh on props, you will see that the container component `<App />` **returns** its child component, while simultaneously passing attributes to it as `props`. Now `props` is an object and just like any other object, it can be destructured within the child component enabling shorter code ! 
+  If you refer to Chap 5 Asabeneh on props, you will see that the container component `<App />` **returns** its child component, while simultaneously passing attributes to it as `props`. Now `props` is an object and just like any other object, it can be destructured within the child component enabling shorter code !
 
 ## 3. Destructuring
 
@@ -104,11 +114,11 @@ Components in React are const variables (Chap 2 Asabeneh) or JavaScript function
   }
   ```
 
-  Then 
+  Then
 
   `const { f, l, c } = person;`
 
-  is equivalent to 
+  is equivalent to
 
   ```js
   const f = person.firstName
@@ -124,7 +134,7 @@ Unlike Vanilla JS, in React you cannot manipulate the DOM directly. React compon
 
   ## 5. States in Functional Components
 
-Refer to [this video](https://www.youtube.com/watch?v=p7wZ_4sWZ4s) for an introduction to React states. Notice that the `useState` hook is used in this example. React hooks are tools to track & modify features like `state` & `side effects` in React. 
+Refer to [this video](https://www.youtube.com/watch?v=p7wZ_4sWZ4s) for an introduction to React states. Notice that the `useState` hook is used in this example. React hooks are tools to track & modify features like `state` & `side effects` in React.
 
 ### i. <ins>UseState hook</ins>
 
@@ -133,18 +143,18 @@ The useState hook is used to add state to functional components. Its syntax is:
 ```js
 const [state, setState] = useState(initialValue);
 ```
-For eg.  
+For eg.
 `const [count, setCount] = useState(0);` gives 0 as the initial value of the 1st argument (i.e. count) while the 2nd argument `setCount` sets the value of the 1st argument `count` based on the passed args , for eg. `setCount(count + 1)`.
 
 A state can be a value, an image or even the theme of a webpage. So for clarity on changing states using the useState hook, refer to the following 3 code examples :
 
-1. [Counter component](https://pastebin.com/5AY74WNE)  
-2. [Animal Switcher](https://pastebin.com/7YcV5m44)  
-3. [Theme toggler](https://pastebin.com/pPS9c0aB)  
+1. [Counter component](https://pastebin.com/5AY74WNE)
+2. [Animal Switcher](https://pastebin.com/7YcV5m44)
+3. [Theme toggler](https://pastebin.com/pPS9c0aB)
 
 * **A note on CSS Styles**
 
-Note that the Theme Toggler example uses the `useState` hook as well a custom-made `useTheme` hook. It also uses *Dynamic Style Injection* to create a const styles variable and injecting it as the innertext of a created `<style>` element. Alternatively the styles could be saved in a separate `style.css` file and imported within `App.js` using `import ./style.css`. For individual elements, inline styles can also be used eg. 
+Note that the Theme Toggler example uses the `useState` hook as well a custom-made `useTheme` hook. It also uses *Dynamic Style Injection* to create a const styles variable and injecting it as the innertext of a created `<style>` element. Alternatively the styles could be saved in a separate `style.css` file and imported within `App.js` using `import ./style.css`. For individual elements, inline styles can also be used eg.
 
 ```js
 const Button = () => (
@@ -160,7 +170,7 @@ The useEffect hook is used to perform side effects in functional components, suc
 ```js
 useEffect(effectFunction, dependencyArray);
 ```
-The `effectFunction` that contains the side effect code you want to execute.  
+The `effectFunction` that contains the side effect code you want to execute.
 The `dependencyArray` is an array of dependencies. It tells React when to re-run the effect.
 If omitted, the effect runs after every render.
 If an empty array ([]) is passed, the effect runs only once after the component mounts. If the array has any dependency variables (e.g., [count]), React watches those variables. If any of them change, React re-runs the effect. Few examples are:
@@ -184,13 +194,13 @@ console.log("Count changed:", count);
 
 ## 6. Context API
 
-In deeply nested components (which is quite common in React), manually passing props through every level of the component tree can be tedious. Sometimes during this prop threading, data is passed down from the `ParentComponent` to the `GrandChild component`, even when they are not needed by the `ChildComponent`! React Context makes a value (number, object, state, etc.) globally available to all children components. Practically, that value is a `state` (eg. theme, cart, etc.) that you need to manage depending on the UI user's actions. Note that some people also use Redux as the state management tool instead of Context API. 
+In deeply nested components (which is quite common in React), manually passing props through every level of the component tree can be tedious. Sometimes during this prop threading, data is passed down from the `ParentComponent` to the `GrandChild component`, even when they are not needed by the `ChildComponent`! React Context makes a value (number, object, state, etc.) globally available to all children components. Practically, that value is a `state` (eg. theme, cart, etc.) that you need to manage depending on the UI user's actions. Note that some people also use Redux as the state management tool instead of Context API.
 
-But returning back, say you wish to manage the `theme` state globally across a website.   
+But returning back, say you wish to manage the `theme` state globally across a website.
 
 First, create a file `// src/context/ThemeContext.js` and follow **steps 1-3**:
 
-1. **Create an empty context container `ThemeContext`**(through createContext() method) 
+1. **Create an empty context container `ThemeContext`**(through createContext() method)
 
     Eg.:
 
@@ -201,14 +211,14 @@ First, create a file `// src/context/ThemeContext.js` and follow **steps 1-3**:
     ```
 
 -------------
-    
+
 
 2.  **Define a Provider Component say `ThemeProvider`**, accepting `{children}` as props. Within the definition of this functional component, there are 3 main parts:
 
-    i- Initialize theme State using `useState` hook  
-    ii- Define a function to change theme state say `toggleTheme`  
-    iii- Install `theme` & `toggleTheme` from i- & ii- above as the `value` prop of the `ThemeContext` container using the `.Provider` class. Then wrap `{children}` components with this `ThemeContext.Provider`. The code is as as below:  
- 
+    i- Initialize theme State using `useState` hook
+    ii- Define a function to change theme state say `toggleTheme`
+    iii- Install `theme` & `toggleTheme` from i- & ii- above as the `value` prop of the `ThemeContext` container using the `.Provider` class. Then wrap `{children}` components with this `ThemeContext.Provider`. The code is as as below:
+
 
     ```js
       export const ThemeProvider = ({ children }) => {
@@ -305,7 +315,7 @@ While in the Theme Toggler example you create a toggleTheme method, in the Cart 
 
 ## 7. Routing
 
-In the latest React Router v6, `<Switch>` wrapper is replaced by `<Routes>`. The complete nesting structure to route ceratin paths to certain Components is as follows: 
+In the latest React Router v6, `<Switch>` wrapper is replaced by `<Routes>`. The complete nesting structure to route ceratin paths to certain Components is as follows:
 
 ```js
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -323,7 +333,7 @@ function App() {
 }
 ```
 
-For more detail, you can refer [here](7-Running%20and%20Deployment.md/#v-routing).
+For more detail, you can refer [here](./7-Running%20and%20Deployment.md/#v-routing).
 
 ## 8. Navigation
 
@@ -347,17 +357,144 @@ Note that `<nav>` wrapper is optional but much needed for navbar styling.
 
 Dynamic routes contain the :id param in the route definition.
 
+## 10. Updating Arrays & Objects
+
+Arrays and Objects will usually exist as `state variables` in your React component. You can update them using the `2nd argument (setter function)` of the useState hook, alongwith an `arrow function` including `prev` keyword + `spread(...)` operator.
+
+Eg. for an array:
+```js
+const [arr, setArr] = useState([1, 2, 3]);
+setArr((prev) => [...prev, 4]);
+```
+
+Similarly for a json object:
+```js
+const [obj, setObj] = useState({a: 1, b: 2});
+setObj(prev => ({...prev, c: 3}));
+```
+
+## 11. Passing Props to React Components
+
+This is similar to how you pass attributes to HTML elements or arguments to functions. Here are several code snippets demonstrating different ways to pass props in React components, covering common patterns and use cases:
+
+### i. Passing String, Number, and Boolean Props
+
+```jsx
+function Welcome(props) {
+  return Hello, {props.name}!;
+}
+
+// Usage
+<Welcome name="Alice" />
+<Welcome name="Bob" />
+```
+You can pass numbers and booleans using curly braces:
+```jsx
+<MyComponent age={25} isActive={true} />
+```
+
+
+### ii. Passing Variables and Objects as Props
+
+```jsx
+const user = { name: "Charlie", avatar: "charlie.png" };
+
+function Profile(props) {
+  return ;
+}
+
+// Usage
+<Profile user={user} />
+```
+
+
+### iii. Passing Functions as Props (Callback Props)
+
+```jsx
+function Button(props) {
+  return <button onClick={props.onClick}>Click me</button>;
+}
+
+function App() {
+  const handleClick = () => alert("Button clicked!");
+  return <Button onClick={handleClick} />;
+}
+```
+
+
+### iv. Using the `children` Prop
+
+```jsx
+function Card(props) {
+  return <div className="card">{props.children}</div>;
+}
+
+// Usage
+<Card>
+  <h2>Title</h2>
+  <p>This is some content inside the card.</p>
+</Card>
+```
+
+
+### v. Destructuring Props in Function Parameters
+
+```jsx
+function Header({ title }) {
+  return <h1>{title}</h1>;
+}
+
+// Usage
+<Header title="Welcome to React!" />
+```
+
+
+### vi. Passing Multiple Props
+
+```jsx
+function Car(props) {
+  return <h2>I am a {props.color} {props.brand}!</h2>;
+}
+
+// Usage
+<Car color="red" brand="Ford" />
+```
+
+
+### vii. Passing Components as Props
+
+```jsx
+function Layout({ sidebar, content }) {
+  return (
+    <div>
+      <aside>{sidebar}</aside>
+      <main>{content}</main>
+    </div>
+  );
+}
+
+// Usage
+<Layout
+  sidebar={<Sidebar />}
+  content={<MainContent />}
+/>
+```
+
+---
+
+These examples show how React props let you pass data, functions, and even components themselves to create flexible, reusable UI building blocks.
+
 # D. UI Component Libraries
 
-If you carefully analyse, a React frontend project is nothing but components. All the UI you see on a webpage: the header/navbar, hero section, body, footer, buttons, sidebar, login page, table, info card, etc. are all but React components whose code you can actually re-use at multiple places. What if some expert could code all the most popular reusable `primitive` `components` and put it in a library for you? You guessed it right, it would be great. Such libraries are called `UI Component Libraries`. 
+If you carefully analyse, a React frontend project is nothing but components. All the UI you see on a webpage: the header/navbar, hero section, body, footer, buttons, sidebar, login page, table, info card, etc. are all but React components whose code you can actually re-use at multiple places. What if some expert could code all the most popular reusable `primitive` `components` and put it in a library for you? You guessed it right, it would be great. Such libraries are called `UI Component Libraries`.
 
-Examples include `Material UI (MUI)`, `Radix UI`, `Ark UI`, `Headless UI`, `Ant Design`,`Chakra UI`, etc. 
+Examples include `Material UI (MUI)`, `Radix UI`, `Ark UI`, `Headless UI`, `Ant Design`,`Chakra UI`, etc.
 
-Except MUI, AntD and Chakra UI, all libraries are `headless`, i.e. they provide `unstyled` components. 
+Except MUI, AntD and Chakra UI, all libraries are `headless`, i.e. they provide `unstyled` components.
 
 ## MUI, AntD & Chakra/UI
 
-MUI & Chakra/UI provide components styled with Emotion/CSS. While AntD provides components styled with Vanilla/CSS enhanced with the `Less` preprocessor. 
+MUI & Chakra/UI provide components styled with Emotion/CSS. While AntD provides components styled with Vanilla/CSS enhanced with the `Less` preprocessor.
 
 MUI provides a custom component `ThemeProvider` while AntD provides `ConfigProvider`. Both are React components that act as wrappers around your app or parts of it. They use the Context API internally to pass values (theme here) down the component tree without requiring prop drilling.
 
@@ -388,11 +525,11 @@ You can write all the css in the framework of your choice for headless libraries
 Ark/UI + Panda/CSS = Park/UI
 Radix/UI + Tailwind/CSS = Shadcn/UI
 ```
-I am particularly interested in `shadcn/ui` due to its minimality and recent popularity. Although it pre-styles all components under the hood with tailwind/css, you can also use other frameworks like vanilla/css to enhance it. Moreover unlike MUI, its npm package doesn't install all the UI components. It only installs the boilerplate code and you can only install the components you need, on the go. Thus it's pretty light-weight. 
+I am particularly interested in `shadcn/ui` due to its minimality and recent popularity. Although it pre-styles all components under the hood with tailwind/css, you can also use other frameworks like vanilla/css to enhance it. Moreover unlike MUI, its npm package doesn't install all the UI components. It only installs the boilerplate code and you can only install the components you need, on the go. Thus it's pretty light-weight.
 
 ## Shadcn/ui
 
-To install it, 
+To install it,
 
 1. First, install tailwind/css using the latest docs as mentioned [here](3-CSS.md/#i-tailwind).
 
@@ -430,10 +567,10 @@ To install it,
     ```
   The alias section above maps `@` to your src directory, matching the `jsconfig.json`.
 
--  Now `remotely` run the CLI hosted on shadcn's npm package using :  
- `npx shadcn@canary init`  
-Since at the time of this writing (Apr 2025), Tailwind v4 is rolled out and `shadcn@latest` may not be compatible with it, so I'm using the `shadcn@canary` npm package.  
- Note that to keep the project lightweight and avoid versioning conflicts, I don't `locally` install the shadcn's npm package using say `npm install shadcn@canary`. Instead I `temporarily` download the npm library using `npx` and then execute the `CLI` binary sitting on that library using `init`. Thus `shadcn` itself is not added as a dependency in your `package.json` file, but this step helps add the dependencies required by shadcn/ui components (e.g., tailwindcss-animate, class-variance-authority, clsx, tailwind-merge) in `package.json`. 
+-  Now `remotely` run the CLI hosted on shadcn's npm package using :
+ `npx shadcn@canary init`
+Since at the time of this writing (Apr 2025), Tailwind v4 is rolled out and `shadcn@latest` may not be compatible with it, so I'm using the `shadcn@canary` npm package.
+ Note that to keep the project lightweight and avoid versioning conflicts, I don't `locally` install the shadcn's npm package using say `npm install shadcn@canary`. Instead I `temporarily` download the npm library using `npx` and then execute the `CLI` binary sitting on that library using `init`. Thus `shadcn` itself is not added as a dependency in your `package.json` file, but this step helps add the dependencies required by shadcn/ui components (e.g., tailwindcss-animate, class-variance-authority, clsx, tailwind-merge) in `package.json`.
 
     If the `init` command shows you a dependency warning offering you two options to proceed: `--force` or `--legacy-peer-deps`, then always choose the `latter`.
 
@@ -479,14 +616,13 @@ Since at the time of this writing (Apr 2025), Tailwind v4 is rolled out and `sha
   ```
   So ensure this structure is present.
 
-- Now add any component (e.g., a Button) to your project:  
-`npx shadcn@canary add button`  
-So we fetch the CLI again via npx, add /src/components/ui/button.jsx and install @radix-ui/react-button as a dependency with --legacy-peer-deps.  
+- Now add any component (e.g., a Button) to your project:
+`npx shadcn@canary add button`
+So we fetch the CLI again via npx, add /src/components/ui/button.jsx and install @radix-ui/react-button as a dependency with --legacy-peer-deps.
 So the entire sourcecode of the button component is now copied to your project. You can also instead manually copy/paste it from the shadcn website and entirely omit this step !
 
-- Now use that shadcn ui component. Eg. in /src/App.jsx :  
-  Import using   
-  `import { Button } from "@/components/ui/button";`   
-  and use anywhere:  
+- Now use that shadcn ui component. Eg. in /src/App.jsx :
+  Import using
+  `import { Button } from "@/components/ui/button";`
+  and use anywhere:
 `<Button variant="destructive" className="mt-2">Delete</Button>`
-

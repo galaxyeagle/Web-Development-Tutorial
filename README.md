@@ -4,15 +4,17 @@ This tutorial series provides a structured approach to learning web development,
 
 ## Table of Contents
 
-1. [Git](./Chap%201-%20Introduction.md)
-2. [JavaScript](./Chap%202-%20HTML.md)
-3. [CSS](./Chap%203-%20CSS.md)
-4. [React](./Chap%204-%20React.md)
-5. [Firebase](./Chap%205-%20JavaScript.md)
-6. [Backend](./Chap%206-%20Backend.md)
-7. [Serving Applications](./Chap%207-%20Serving.md)
-8. [Database](./Chap%208-%20Database.md)
-9. [Full Stack Project](./Chap%209-%20Project.md)
+1. [Git](./1-Git.md)
+2. [JavaScript](./JavaScript.ipynb)
+3. [CSS](./3-CSS.md)
+4. [React](./4-React.md)
+5. [Firebase](./5-Firebase.md)
+6. [Backend](./6-Backend.md)
+7. [Running and Deployment](./7-Running-Deployment.md)
+8. [Payments](./8-Payments.md)
+9. [NextJS](./9-NextJS.md)
+10. [TypeScript](10-TypeScript.md)
+11. [Database](11-Database.md)
 
 
 ## Prerequisites
@@ -23,6 +25,4 @@ This tutorial series provides a structured approach to learning web development,
 
 Feel free to submit issues and enhancement requests.
 
-## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
