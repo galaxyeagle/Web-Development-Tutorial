@@ -183,9 +183,10 @@ Common Nextjs Endpoints/Route handlers you may create are:
 Unlike React, Nextjs supports file-based routing. Pages Router is the traditional way and App Router the new way to do file-based routing. You have already seen previously the difference in structures of the App Router & Pages Router. You get to choose one of these at the time of creating your project using `create-next-app`.
 
 ## Fetch API Calls within async/await blocks
+
 Pages Router is Client-heavy by default. For server tasks like `fetch api`, special data-fetching functions like `getServerSideProps` (SSR)/`getStaticProps` (SSG) respectively, i.e. export an async function called getServerSideProps/getStaticProps from a page. Any `fetch` has to be done from within them. But in App Router, by default, files in the `app/` directory are treated as `React Server Components`. This means you can export your page component itself as an `async` function and fetch data directly inside them. The server executes these functions, fetches the data, and sends the rendered HTML to the client. For interactivity possible only in client-side viz. hooks, states, you can add `'use client'` at the top of the page code.
 
-Now you must be thinking why to run fetch api calls on the server like REST API. THey can run on the client/browser, right? Here's where Nextjs trumps over Reactjs. By running on the server, you can run it at build time (SSG) or request-time (SSR) which makes it fast + eleiminatesthe need of intermediate SDKs within Expressjs endpoints, as Nextjs guarantees there’s no risk of exposing secrets or private logic to the client.
+Fetch API calls are preferred to be coded in RSCs, and since RSCs run on the server, you can run it at build time (SSG) or request-time (SSR) which makes it fast + eleiminates the need of intermediate SDKs within Expressjs endpoints, since Nextjs guarantees there’s no risk of exposing secrets or private logic to the client. This is an advantage over React/Express stack.
 
 To ensure SSR happens instead of SSG, you can simply add a `cache` propert like this:
 
@@ -223,6 +224,8 @@ export async function POST(request: Request) {
 ```
 
 Thus it eliminates the need for a separate backend server in simple scenarios.
+
+Notice that in Expressjs, we have `req` and `res` objects and the REST endpoint produces a `res` object automatically. It sends the response using `res.json(data)` or `res.send()`. But in modern frameworks like Nextjs, we have the standard Web API's `Request` and `Response` objects, which is part of the Fetch API. You create response using `new Response(body, options)` and can return this. Or as a shortcut in Nextjs, you can `return Response.json(...)`
 
 ## Nested Layouts
 `Nested layouts` is one of the distinguishing features of App Router. It allows you to create a layout that is shared across multiple pages. This is useful for creating a consistent look and feel across your application. To create a nested layout, you can create a `layout.tsx` file in the `app/` directory. The layout file will be automatically applied to all nested children. This is impossible in the Pages Router unless you manually wrap each child page with the Layout component, making your codebase clunky with this wrapping boilerplate.
@@ -285,6 +288,118 @@ Traditionally the whole page waits for all JavaScript to load and then hydrates 
 Also, while `Suspense` is usually used for Server components which fetch data, Selective hydration only applies to client components (those with interactivity).
 
 (Note that with Server Components (RSCs), the quantum of JS needed to be executed in the client was already reduced)
+
+
+# Tussle between client components & server components
+
+In traditional Reactjs, all components invariably render on the client. After all, that was why the MERN stack succeeded over the outdated SSR type LAMP Stack.
+
+Vercel enginerers didn't just dispense with a separate Expressjs backend server by incorporating Route handlers (substitutes for Nodejs API endpoints) within the `/app/api` folder of the frontend; but they also found out that only the JS hydration (for interactive components) needs to be run on the client whilst the async/await fetching can happen on servers. Thus was born the concept of client components and server components (RSCs) in frontend dev.  
+
+We have seen how all components in the Nextjs/AppRouter are RSCs by default allowing`async/await` functions. It also allows to offload as much work as possible to the Nextjs server-side and minimise the hydration payload of the browser/client. 
+
+But practically, I faced the following problems:
+
+---
+
+- **PROBLEM 1**
+
+For components which require interactivity (eg. state, effects, event handlers), we can make them client components running on the client/browser by writing `"use client"` at the top of the file. **But what if we want both async/await & interactivity in the same file?** There's the problem. 
+
+If at all you try to put both in the same file, it will become a client component ofc, but your browser/client will try to make async calls like a server and will keep re-rendering the page, heating up your computer. Further, with "use client", Next.js will send a fat JavaScript bundle to the browser to hydrate the whole page, even for static parts like say the nav or welcome message. 
+
+- **SOLUTION 1: SEPARATION**
+
+The solution is to take out the interactive apsects into a separate client component file say `/components/MyClientComponent.tsx` and then import it to your RSC say `/app/MyRSC.tsx` using `import MyClientComponent from "@/components/MyClientComponent.tsx";`
+
+---
+
+- **PROBLEM 2**
+
+If you have a **highly** interactive component, eg an autosuggest search bar or a live score updates widget, it has to be a client component but there's high likelihood that its constantly fetching realtime data/debounced data from a server/endpoint/database. Would you then start fetch in client component again? No !!!
+
+- **SOLUTION 2: SERVER ACTIONS**
+
+Here you keep all fetching code in a file say `/server/actions/myServerAction.ts` and all interactive code in a file say `/components/client-comps/interactive.ts`. Then you can import your server action in your client component like: `import { myServerAction } from "@/server/actions/myServerAction";` and use it to fetch data like this : `const data = await myServerAction(query);` within an async function.
+
+Note that although it appears to be the same old async/await which was meant to be forbidden inside a client component, there are differences :
+
+> 1- The actual fetch compute is happening in the server through server actions. The aysnc/await in the client component is a bare minimum necessity. The client/user interaction triggers the action (e.g., via a form or function call), but the server does the work. The client-side JS is quite minimised. 
+
+> 2- The api endpoint is not exposed in the client/browser. Hence it's secure.
+
+Note that you must declare `"use server"` directive at the top of a server actions file.
+
+Server actions are not components. They are exprtable async functions that run on the server, which can be called as props like callback functions and also in forms, event listeners, etc. A server action file (say /server/actions/create.ts) would look like this:
+```ts
+'use server'
+export async function create() {
+  // Server-side logic
+}
+```
+
+
+
+
+
+
+# My project organisation style
+
+In React, a function that returns JSX that partly/wholly describes what should appear on the UI is called a `functional component`. A function with no jsx return block is called a `regular function`. 
+
+My philosphy (and something I can add as system-prompt during vibe-coding) is as follows:
+
+1. Use the "islands architecture" - keep most components server-rendered, and only make interactive parts client components. 
+
+2. In the `/app` folder, one `page.tsx` file should define only one `functional component` which should be marked `export default` and preferably in `arrow syntax` (it can import other func components from other files for nested rendering and ofc define many regular functions within the default func component).
+
+3. By default, all my top-level React Server Components (RSCs) will be mounted on routes. For that I will divide my `/app` folder into subfolders say `/RSC1`, `/RSC2`, etc. each with nested folders or just a `page.tsx` file. Each of them will be accessible by hrefing to the route say `/RSC2/bookmarks/`, etc.
+
+4. For all other components, I will make 2 sub-folders inside the `/components` folder: `/client-comps` and `/server-comps` **exclusively** for `client components` (requiring interactivity like state, hooks, event handlers, etc) and `server components` (requiring async/await or fetch) **respectively**. These components can be imported into my top-level RSCs in the `/app` folder. 
+
+5. For **highly** interactive client components like an autosuggest search bar or a live score updates widget, anywhere in my project, the fetch logic from a database/api through an api endpoint/ route handler in my `/app/api` will be **replaced** with calling a server action from within a `useEffect` hook body. This corresponding server action will be stored in a file in the `/server/actions` folder and will be doing the actual server-side fetching logic.
+
+
+## ILLUSTRATION
+
+To illustrate the islands architecture, consider that I want to authenticate a user's session, then fetch all bookmarks from a database table and display them with some interactivity (eg. button to delete bookmark from database). For this I will use 3 files:
+
+1. `Server Action (getBookmarks):` Encapsulates all DB logic, reusable from anywhere.
+
+2. `Client Component (BookmarkTableClient.js):` Handles all browser interactivity, state, and UI updates.
+
+3. `Server Component (page.js):` Handles authentication, calls server action, and passes data to the client.
+
+So the Server Component may be a minimal file like this:
+
+```ts
+// app/bookmarks/page.js
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { getBookmarks } from "@/actions/getBookmarks";
+import BookmarkTableClient from "./BookmarkTableClient";
+
+export default async function BookmarksPage() {
+  const session = await auth();
+  if (!session) redirect("/");
+
+  const userEmail = session.user?.email;
+  if (!userEmail) return <div className="p-8">User not found.</div>;
+
+   const bookmarks = await getBookmarks(session.user.id); //calling server action
+
+     return (
+    <main className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-lg shadow">
+      <h2 className="text-2xl font-bold mb-4">Bookmarked Profiles</h2>
+      <BookmarkTableClient initialBookmarks={bookmarks} /> 
+    </main>
+  );
+}
+```
+As clear, the server component offloads the heavylifting to the server action and client components.
+
+Note that it's also possible to directly use the server action to handle an event within the client component, eg. Button onclick or in the `action` attribute of a `<form>`. But I don't prefer this for the sake of modularity. I would rather import the server action in the high-level RSC and pass it as props to the client component there.
+
 
 # Vercel's AI SDK
 

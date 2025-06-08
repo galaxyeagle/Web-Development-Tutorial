@@ -134,7 +134,7 @@ Unlike Vanilla JS, in React you cannot manipulate the DOM directly. React compon
 
   ## 5. States in Functional Components
 
-Refer to [this video](https://www.youtube.com/watch?v=p7wZ_4sWZ4s) for an introduction to React states. Notice that the `useState` hook is used in this example. React hooks are tools to track & modify features like `state` & `side effects` in React.
+Refer to [this video](https://www.youtube.com/watch?v=p7wZ_4sWZ4s) for an introduction to React states. Notice that the `useState` hook is used in this example. React uses **hooks** (eg. `useState` and `useEffect`) to track & modify  `state` & `side effects`. Note that unlike `props` which are passed between components, `states` are specific to a component and store data about a component's current situation.
 
 ### i. <ins>UseState hook</ins>
 
