@@ -220,7 +220,7 @@ You need to use `document.cookies()` function to create cookies client-side (eg.
 
 ---
 
-# My Auth stack (NextAuth with Google OAuth
+# My Auth stack (NextAuth with Google OAuth)
 
 Your app has many routes. Each renders various components (server and client components). Your aim is that any of those components will only be rendered when auth session is active, otherwise redirect the user to the sign in page. 
 
@@ -330,70 +330,44 @@ Some observations from the above auth config:
 
 3. `jwt` is used as session strategy. Thus the session would be a cookie wrapped in a jwt token as we discusses earlier. If you instead use the `database` strategy, the session details would be stored in a separate database which I think is complicated and an overkill.
 
-Also notice that in the `app/page.tsx`, there's an `<AuthButton>`. Its purpose is to show “Sign In” if user not logged in, “Sign Out” if logged in. This component is realised through a client and server component pair, as follows:
+Also notice that in the `app/page.tsx`, there's an `<AuthButton>`. Its purpose is to show “Sign In” if user not logged in, “Sign Out” if logged in. This component is as follows:
 
 ```ts
-//app/AuthButton.client.tsx
+//components/client-comps/AuthButton.tsx
 
 "use client";
+
 import { useSession } from "next-auth/react";
-
 import { Button } from "@/components/ui/button";
-
 import { signIn, signOut } from "@/auth/helper";
 
-export default function AuthButton() {
-  const session = useSession();
+export function AuthButton() {
+  const { data: session } = useSession();
 
-  return session?.data?.user ? (
-    <Button
-      onClick={async () => {
-        await signOut();
-        await signIn();
-      }}
-    >
-      {session.data?.user?.name} : Sign Out
-    </Button>
-  ) : (
-    <Button onClick={async () => await signIn()}>Sign In</Button>
-  );
-}
-```
-
-and 
-
-```ts
-//app/AuthButon.server.tsx
-
-import { SessionProvider } from "next-auth/react";
-import { auth } from "@/auth";
-
-import AuthButtonClient from "./AuthButton.client";
-
-export default async function AuthButton() {
-  const session = await auth();
-  if (session && session.user) {
-    session.user = {
-      name: session.user.name,
-      email: session.user.email,
-    };
+  if (!session?.user) {
+    return <Button onClick={() => signIn()}>Sign In</Button>;
   }
 
   return (
-    <SessionProvider session={session}>
-      <AuthButtonClient />
-    </SessionProvider>
+    <Button onClick={() => signOut()}>
+      {session.user.name} : Sign Out
+    </Button>
   );
 }
 ```
+and wrap all children with SessionProvider in the layout file
 
-Observe the following:
+```ts
+//app/layout.tsx
+import { SessionProvider } from "next-auth/react";
+......
+<SessionProvider>
+  {children}
+</SessionProvider>
+......
+```
 
-1. The interactivity is handled by the client component which is imported in the server component. This is as per the `islands architecture`.
-
-2. On the server, `auth()` fetches the session. On the client, `useSession()` provides session state. `<SessionProvider>` ensures both are in sync.
-
-3. The `signIn()` and `signOut()` functions are imported from `/auth/helper.ts`. So let's check that file:
+ The `signIn()` and `signOut()` functions are imported from `/auth/helper.ts`. So let's check that file:
 
 ```ts
 //auth/helper.ts
@@ -452,7 +426,18 @@ Your App: /api/auth/callback/google  <-- "callback" request
 Session is created and user is signed in & redirected to dashboard
 ```
 
-The `callback` is a route your app exposes for the OAuth provider (Google) to send the user and their authorization code back to your app. The callback URL must be registered in your Google Cloud Console as an "Authorized redirect URI" to work. NextAuth handles all the heavy lifting at this endpoint: exchanging codes, fetching tokens, and setting up the session. For that  NextAuth triggers your `jwt` and `session` callbacks defined in `auth/index.ts` as part of creating the user session.
+The `callback` is a route your app exposes for the OAuth provider (Google) to send the user and their authorization code back to your app. The callback URL must be registered in your Google Cloud Console as an "Authorized redirect URI" to work. NextAuth handles all the heavy lifting at this endpoint: exchanging codes, fetching tokens, and setting up the session. For that  NextAuth triggers your `jwt` and `session` callbacks defined in `auth/index.ts` as part of creating the user session. After that by default Next.js redirects to the page you started from (ie. `/`). In the `/` page, this code
+```ts
+if (session?.user) {
+    redirect("/dashboard");
+  }
+```
+redirects you to your personalised dashboard !
+
+If you want Nextjs to redirect to some other url instead of `/`, say `/dashboard`, you can configure the SignIn function:
+```ts
+signIn("google", { callbackUrl: "/dashboard" })
+```
 
 **Now the magic of NextAuth is that** you don't need to define `/api/auth/signin/google`, `/api/auth/callback/google` and `/api/auth/signout` endpoints separately. You just create a catch-all route handler as follows, and NextAuth creates all the endpoints under the hood.
 

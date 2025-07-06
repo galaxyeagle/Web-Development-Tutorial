@@ -13,8 +13,12 @@ This tutorial series provides a structured approach to learning web development,
 7. [Running and Deployment](./7-Running-Deployment.md)
 8. [Payments](./8-Payments.md)
 9. [NextJS](./9-NextJS.md)
-10. [TypeScript](10-TypeScript.md)
-11. [Database](11-Database.md)
+10. [TypeScript](./10-TypeScript.md)
+11. [Database](./11-Database.md)
+12. [Authentication](./12-Authentication.md)
+13. [SearchBar](./13-SearchBar.md)
+14. [FilterBar](./14-FilterBar.md)
+15. [Prompts](./15-Prompts.md)
 
 
 ## Prerequisites

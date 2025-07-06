@@ -62,7 +62,7 @@ Similarly for App Based Routing (new), the `/app/about/page.tsx` becomes `/about
 
 ## Navigation
 
-Remember that in Reactjs, we [preferred](4-React.md/#8-navigation) to use `<Link>` from the react-router-dom instead of `<a>` for linking to internal paths because it kept track of browsing history and also enabled client-side routing, updating only the parts of the page that need to change, rather than the whole page reload. See this example:
+Remember that in Reactjs, we [preferred](./4-React.md#8-navigation) to use `<Link>` from the react-router-dom instead of `<a>` for linking to internal paths because it kept track of browsing history and also enabled client-side routing, updating only the parts of the page that need to change, rather than the whole page reload. See this example:
 
 ```js
 import { Link } from 'react-router-dom';

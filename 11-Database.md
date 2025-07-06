@@ -642,3 +642,292 @@ After updating the data in seed.ts, to push that to Neon remote run:
 **Observation 1:**
 
 The Neon serverless driver allows you to query Postgres databases over HTTP or WebSockets instead of the traditional TCP protocol used by standard Postgres drivers like pg.You install it as a package (e.g., @neondatabase/serverless) and use it in your code to interact with Neon-hosted Postgres databases.
+
+
+## Bioinformatics Dashboard with Bookmarking
+
+For illustration, we'll test in a Nodejs project (not even a full Nextjs project).
+
+### 1. Create a Nodejs project
+
+```bash
+mkdir supabase-drizzle-tutorial
+cd supabase-drizzle-tutorial
+npm init -y
+npm install drizzle-orm postgres dotenv drizzle-kit @supabase/supabase-js
+```
+
+### 2.Set Up Supabase:
+
+- Create a Supabase project at supabase.com.
+- Go to Database > Settings > Connection String and copy the URI (Transaction pool mode).
+- Create a **.env file** in your project root:
+
+```sh
+DATABASE_URL=postgresql://[user]:[password]@[host]:[port]/[dbname]
+# Replace placeholders with your Supabase credentials.
+```
+
+### 3. Configure Drizzle:
+        
+Create a `drizzle.config.ts` file:
+
+```ts
+import { defineConfig } from "drizzle-kit";
+
+     export default defineConfig({
+       schema: "./src/db/schema.ts",
+       out: "./supabase/migrations",
+       dialect: "postgresql",
+       dbCredentials: {
+         url: process.env.DATABASE_URL!,
+       },
+     });
+```
+
+### 4. Folder Structure:
+
+```
+supabase-drizzle-tutorial/
+├── src/
+│   ├── db/
+│   │   ├── schema.ts
+│   │   ├── index.ts
+│   │   ├── queries/
+│   │   │   ├── users.ts
+│   │   │   ├── tasks.ts
+│   │   │   └── orders.ts
+├── supabase/
+│   ├── migrations/
+├── .env
+├── drizzle.config.ts
+├── package.json
+└── tsconfig.json
+```
+
+### 5.  Schema (`src/db/schema.ts`): 
+
+This schema defines three tables: `users`, `tasks`, and `orders`, which we’ll use for the examples.
+
+```ts
+import { pgTable, serial, varchar, text, integer, timestamp, boolean } from "drizzle-orm/pg-core";
+
+   export const users = pgTable("users", {
+     id: serial("id").primaryKey(),
+     name: varchar("name", { length: 100 }).notNull(),
+     email: varchar("email", { length: 100 }).unique().notNull(),
+     createdAt: timestamp("created_at").defaultNow().notNull(),
+   });
+
+   export const tasks = pgTable("tasks", {
+     id: serial("id").primaryKey(),
+     userId: integer("user_id").references(() => users.id).notNull(),
+     title: varchar("title", { length: 100 }).notNull(),
+     description: text("description"),
+     completed: boolean("completed").default(false).notNull(),
+     createdAt: timestamp("created_at").defaultNow().notNull(),
+   });
+
+   export const orders = pgTable("orders", {
+     id: serial("id").primaryKey(),
+     userId: integer("user_id").references(() => users.id).notNull(),
+     product: varchar("product", { length: 100 }).notNull(),
+     amount: integer("amount").notNull(),
+     status: varchar("status", { length: 50 }).default("pending").notNull(),
+     createdAt: timestamp("created_at").defaultNow().notNull(),
+   });
+
+   export type InsertUser = typeof users.$inferInsert;
+   export type SelectUser = typeof users.$inferSelect;
+   export type InsertTask = typeof tasks.$inferInsert;
+   export type SelectTask = typeof tasks.$inferSelect;
+   export type InsertOrder = typeof orders.$inferInsert;
+   export type SelectOrder = typeof orders.$inferSelect;
+```
+
+Here's the explanation :
+
+| Line                                                                 | Explanation                                                                                         |
+|----------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| export const users = pgTable("users", { ... });                             | I want to create a table called users in my database, and I’ll describe its structure inside the curly braces { ... }.                                                       |
+| id: serial("id").primaryKey(),                                       | Add an `id` column: auto-incrementing number, used as the unique primary key for each user.         |
+| name: varchar("name", { length: 100 }).notNull(),                    | Add a `name` column: text up to 100 characters, must be filled in (cannot be left empty) since its notNull.           |
+| email: varchar("email", { length: 100 }).unique().notNull(),         | Add an `email` column: text up to 100 characters, must be unique and cannot be left empty.           |
+| createdAt: timestamp("created_at").defaultNow().notNull(),           | Add a `createdAt` column: records the date and time a user is created, auto-filled, cannot be empty.|
+---
+
+The `schema.ts` file is like the blueprint for all the tables.
+
+Note that serial, varchar, etc. are column types. Other common column types are:
+
+**Numeric Types**
+
+- `integer()`  
+  4-byte signed integer (e.g., primary keys, counters)[1][7].
+
+- `smallint()`  
+  2-byte signed integer (smaller range)[1][7].
+
+- `bigint()`  
+  8-byte signed integer (large numbers)[1][7].
+
+- `serial()`, `smallserial()`, `bigserial()`  
+  Auto-incrementing integer types (for IDs)[1].
+
+- `decimal(precision, scale)`  
+  Exact numeric, for money or precise values[7].
+
+- `real()`  
+  4-byte floating point[7].
+
+- `doublePrecision()`  
+  8-byte floating point[7].
+
+**String/Text Types**
+
+- `text()`  
+  Variable-length string[1][7].
+
+- `varchar(length)`  
+  String with a maximum length[7].
+
+- `char(length)`  
+  Fixed-length string[7].
+
+**UUID**
+
+- `uuid()`  
+  Universally unique identifier, often used for IDs[1][7].
+
+**Boolean**
+
+- `boolean()`  
+  True/false values[1][7].
+
+**Date & Time Types**
+
+- `timestamp()`  
+  Date and time (with/without timezone)[1][7].
+
+- `date()`  
+  Date only[7].
+
+- `time()`  
+  Time only[7].
+
+**JSON**
+
+- `json()`  
+  Stores JSON data (text)[7].
+
+- `jsonb()`  
+  Stores JSON data (binary, more efficient for queries)[7].
+
+**Array Types**
+
+- `.array()`  
+  Used with other types to store arrays (e.g., `text('tags').array()`)[7].
+
+
+**Type Modifiers (Can be used with any type)**
+
+- `.primaryKey()`
+- `.notNull()`
+- `.default(value)`
+- `.unique()`
+- `.check(constraint)`
+
+
+### 6. Database Connection (`src/db/index.ts`):
+
+```ts
+import { drizzle } from "drizzle-orm/postgres-js";
+   import postgres from "postgres";
+   import { config } from "dotenv";
+   import * as schema from "./schema";
+
+   config({ path: ".env" });
+
+   const client = postgres(process.env.DATABASE_URL!, { prepare: false });
+   // We use postgres-js to talk to Supabase’s PostgreSQL database & create a supabase client
+   export const db = drizzle({ client, schema });
+   // This line sets up and exports a ready-to-use database object (db) that knows how to connect to your database and understands your table structure (schema), so you can easily perform database operations in your app.
+   ```
+
+Ensure your .env.local includes:
+
+`SUPABASE_DB_URL=postgresql://username:password@host:port/dbname`
+
+  ### 7. Generate and Apply Migrations :
+
+```sh
+npx drizzle-kit generate # creates a new migration sql file based on your schema.ts
+
+npx drizzle-kit push  # applies pending migration to your supabase remote
+```
+
+This creates migration files in `supabase/migrations` and applies them to your Supabase database.
+
+Now is the time to create query files. Before that, let's see the general syntax of common drizzle queries:
+
+```ts
+db
+.select({ columns })
+.from(table)
+.where(condition)
+
+db
+.insert(table)
+.values(data)
+.returning({ columns })
+
+db
+.update(table)
+.set({ column: value })
+.where(condition)
+.returning({ columns })
+
+db
+.delete(table)
+.where(condition)
+.returning({ columns })
+
+db
+.query
+.table
+.findMany({ with: { relation: { columns } } }) 
+
+// or 
+
+db
+.query
+.table
+.findFirst(...)
+```
+
+### 8. Query file
+
+The general `src/queries/my_query.ts` file (say for users table) would look like :
+
+```ts
+import { db } from "./index";
+import { orders } from "./schema";
+
+async function select-orders(my-Id: number) {
+  return await db
+    .select()
+    .from(orders)
+    .where(eq(orders.Id, my-Id) && eq(orders.status, "pending"));
+}
+
+export default async function orders-page(){
+    const my-orders = await select-orders(3);
+}
+```
+Here you create a custom function `select-orders()`which can be called to query all “pending” orders for a specific customer (my-Id=3 here) and stores in variable `my-orders`. You can use this template for any select (not post/delete) operation on any table in the database.
+
+Note that `my_query.ts` is a server component and `orders-page()` function runs on the server. This function calls the helper function `select-orders()` present in the same file which queries the `orders` table in the database.
+
+### 9. Interactive insert/delete
+
+For this you can create a client component where you can attach api calls to button clicks to insert/delete bookmarks. For that you need to define api endpoints (POST/DELETE) in app/api/bookmark/route.ts.

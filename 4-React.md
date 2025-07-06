@@ -313,7 +313,254 @@ To apply your knowledge, the complete source code for 2 exciting projects using 
 While in the Theme Toggler example you create a toggleTheme method, in the Cart example you usually need to define multiple methods like addToCart, removeFromCart, clearCart, etc. within the `CartProvider` component.
 
 
-## 7. Routing
+## 7. Redux
+
+Instead of Context API, we can also use redux for state management. 
+
+Here the frontend project structure would look like :
+
+```
+my-app/
+├── src/
+│   ├── components/
+│   │   └── ProjectCard.tsx
+│   ├── pages/
+│   │   └── HomePage.tsx
+│   ├── redux/
+│   │   ├── mySlice.ts       // <--- Your slice
+│   │   ├── store.ts         // <--- Store configuration
+│   ├── App.tsx
+│   ├── main.tsx (or index.tsx)
+│   └── ...
+├── package.json
+└── ...
+```
+Your slice file in general is like this:
+
+```ts
+//mySlice.ts
+
+const mySlice = createSlice({
+  name: 'sliceName',
+  initialState,
+  reducers: {
+    // Synchronous reducers (optional)
+    syncReducer(state, action) { ... }
+  },
+  extraReducers: builder => {
+    builder
+      .addCase(myAsyncThunk.pending, (state, action) => { ... })
+      .addCase(myAsyncThunk.fulfilled, (state, action) => { ... })
+      .addCase(myAsyncThunk.rejected, (state, action) => { ... });
+  }
+});
+```
+But its difficult to learn from generals.Let's be specific.
+Say we are implementing a **cart functionality**.
+
+### i. Cart Slice
+
+
+
+
+The general cart slice would look like this :
+
+```ts
+// src/redux/cartSlice.ts
+
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+
+// (Optional) Define types for state and payloads
+// type Item = { ... };
+// interface CartState { ... }
+
+// (Optional) Define async thunks for API calls
+// export const someAsyncThunk = createAsyncThunk('sliceName/thunkName', async (arg, thunkAPI) => { ... });
+
+const initialState = {
+  // ...your initial state properties
+  cart: [],
+  // loading: false,
+  // error: null,
+};
+
+const cartSlice = createSlice({
+  name: 'cart', // Name of the slice
+  initialState,
+  reducers: {
+    // Synchronous reducers
+    addItem: (state, action) => {
+      // logic to add item
+    },
+    removeItem: (state, action) => {
+      // logic to remove item
+    },
+    // ...other reducers
+  },
+  extraReducers: builder => {
+    // Handle async thunk actions
+    builder
+      .addCase(/* asyncThunk.pending */, (state, action) => {
+        // logic for pending
+      })
+      .addCase(/* asyncThunk.fulfilled */, (state, action) => {
+        // logic for fulfilled
+      })
+      .addCase(/* asyncThunk.rejected */, (state, action) => {
+        // logic for rejected
+      });
+    // You can add more .addCase(...) for other thunks
+  }
+});
+
+export const { addItem, removeItem /*, ...other actions */ } = cartSlice.actions;
+export default cartSlice.reducer;
+```
+
+If you carefully observe, this file has the following parts:
+
+```
+1.  Imports
+2.  Type/Interface definitions (Optional)
+3.  Async Thunk definitions
+4.  Initial state definition
+5.  createSlice() definition -- *(the main part)*
+6.  Exports
+```
+
+#### 3. Async Thunks defined
+
+Let's see the third part, ie def of async thunks in detail.
+
+- **Thunk** is a function e.g. `fetchCart()`.
+
+- In order to define a thunk, you call the `createAsyncThunk()` function in cartSlice.ts, like this:
+
+  ```ts
+  export const fetchCart = createAsyncThunk('cart/fetchCart', async () => { ... });
+  ```
+- When you create this thunk `fetchCart`, Redux Toolkit automatically generates three functions under the hood called **action creators** and attaches them to this thunk function :  
+i.   `fetchCart.pending`  
+ii.  `fetchCart.fulfilled`  
+iii. `fetchCart.rejected`  
+
+  Each of these automatically gets a `.type` property:  
+  eg. `fetchCart.pending.type === 'cart/fetchCart/pending'`
+
+- Whenever you dispatch this thunk in another component eg. using `dispatch(fetchCart())`, the thunk in turn automatically dispatches **actions** based on the stages of the asynchronous operation: `/pending` when it starts, `/fulfilled` on success, `/rejected` on failure.
+
+- Each dispatched action needs to be handled by a **handler**. Since an async thunk generates these actions, their handlers sit in `extraReducers`. You may wonder how do the handlers recognise an action is meant for them? The answer is by matching their action types (e.g., 'cart/fetchCart/pending') using the action creators (fetchCart.pending, etc.) passed to .addCase() : `.addCase(action creator, handler)`. The handler then updates the state of the slice !
+
+In summary,
+| What you do             | Who calls it?      | When?                        |
+|-------------------------|--------------------|------------------------------|
+| `createAsyncThunk(...)` | **You**            | When defining the thunk      |
+| `dispatch(thunk())`     | **You**            | When you want async logic    |
+| Pending/Fulfilled/Rejected actions dispatched | **Redux Toolkit (auto)** | As the async process runs    |
+| `.addCase(thunk.pending, ...)` | **You** (in slice) | To handle each action type  |
+
+
+
+#### 5. createSlice() definition
+
+Let's see the 5th part i.e. `createSlice()` definition in more detail. Its structure is like this :
+
+```
++-------------------------------------------------------------+
+|                  createSlice({ ... })                       |
+|-------------------------------------------------------------|
+| name: 'cart',                                               |
+|                                                             |
+| initialState: { ... },                                      |
+|                                                             |
+| reducers: {                                                 |
+|   +-------------------------------+                         |
+|   | addToCartLocal                |  <-- Synchronous logic  |
+|   | rollbackAddToCart             |      (optimistic UI)    |
+|   | removeFromCartLocal           |                         |
+|   | rollbackRemoveFromCart        |                         |
+|   +-------------------------------+                         |
+| },                                                          |
+|                                                             |
+| extraReducers: builder => {                                 |
+|   +-------------------------------+                         |
+|   | .addCase(fetchCart.pending)   |  <-- Async logic        |
+|   | .addCase(fetchCart.fulfilled) |      (thunks)           |
+|   | .addCase(fetchCart.rejected)  |                         |
+|   | .addCase(addToCart.fulfilled) |                         |
+|   | .addCase(addToCart.rejected)  |                         |
+|   | .addCase(removeFromCart.fulfilled)                      |
+|   | .addCase(removeFromCart.rejected)                       |
+|   +-------------------------------+                         |
+| }                                                           |
++-------------------------------------------------------------+
+```
+
+You need to pass a configuration **object** as an argument to the `createSlice()` function. The general format is as follows:
+- **Curly Braces `{}`**: The argument to `createSlice()` is an object, so use curly braces.
+- **Properties**:
+  - `name`: A string to identify the slice.
+  - `initialState`: The initial state value for this slice.
+  - `reducers`: An object containing synchronous reducer functions.
+  - `extraReducers`: An object to register handlers for async **actions**
+
+**REDUCERS :**
+
+Reducers are pure functions `(state, action) => newState` that calculate the new state based on these `state` & `action` inputs.
+Consider a sample reducer:
+
+```ts
+const addItem = (state, action) => {
+  // state = current state before update
+  // action = { type: 'cart/addItem', payload: newItem }
+  state.cart.push(action.payload);
+};
+```
+
+Here `state` (current state of the slice) and `action` (delta applied to the current state) are parameters of the reducer function, auto called by Redux internally. You just define the function signature to accept these parameters, but Redux provides their values at runtime.
+
+When you dispatch an action (e.g., `dispatch(addItem(payload))`) in another component (e.g. cartButton), Redux internally calls your reducer like this: `newState = reducer(currentState, dispatchedAction);`  
+Your reducer function receives these two arguments and returns the new state based on the action.
+
+**EXTRA REDUCERS :**
+
+We had seen how a dispatched async action triggers a handler sitting in `extraReducers` to update the state of the slice based on the async operation's status.
+
+We had also seen that `.addCase(action-creator, handler)` is part of the general syntax. Let's see the full syntax for our cart:
+
+```ts
+extraReducers: builder => {
+  builder
+    .addCase(fetchCart.pending, (state) => { state.status = 'loading'; })
+    .addCase(fetchCart.fulfilled, (state, action) => { state.cart = action.payload; })
+    .addCase(fetchCart.rejected, (state) => { state.status = 'failed'; });
+}
+```
+
+
+### ii. Store
+
+The cart slice is a part of larger store (which may have other states like theme, etc.). We import the reducers of all slices in this store file.
+
+```ts
+//src/redux/store.ts
+
+import { configureStore } from '@reduxjs/toolkit';
+import cartReducer from './cartSlice';
+
+const store = configureStore({
+  reducer: {
+    cart: cartReducer,
+  },
+});
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
+export default store;
+```
+
+## 8. Routing
 
 In the latest React Router v6, `<Switch>` wrapper is replaced by `<Routes>`. The complete nesting structure to route ceratin paths to certain Components is as follows:
 
@@ -333,7 +580,7 @@ function App() {
 }
 ```
 
-For more detail, you can refer [here](./7-Running%20and%20Deployment.md/#v-routing).
+For more detail, you can refer [here](./7-Running-Deployment.md#v-routing).
 
 ## 8. Navigation
 
